@@ -1,26 +1,456 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@config "../tailwind.config.ts";
 
+/* Dark is the default; `dark:` utilities apply unless the light theme is toggled on. */
+@custom-variant dark (&:where(:root:not([data-theme="light"]) *));
+
+/* ── Design tokens — locked to the brief (§5). Do not add variants. ─────── */
+
+/* Dark (default) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #161617;            /* dark grey, lifted from near-black for visibility */
+  --surface: #1E1E20;
+  --surface-2: #272729;
+  --surface-3: #303033;
+  --line: #333336;
+  --line-2: #47474B;
+  --ink: #F5F5F0;
+  --ink-2: #A8A89E;
+  --ink-3: #8A8A82;
+  --accent: #3D5BE0;        /* less-saturated royal blue */
+  --accent-2: #5A75E8;
+  --accent-deep: #2A43B8;
+  --accent-ink: #FFFFFF;
+  --accent-soft: rgba(61, 91, 224, 0.14);
+  --glow: rgba(61, 91, 224, 0.08);
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Light (toggle) */
+[data-theme="light"] {
+  --bg: #F8F7F2;            /* warm cream, NOT white */
+  --surface: #FFFFFF;
+  --surface-2: #F2F1EB;
+  --surface-3: #E9E8E1;
+  --line: #E6E4DA;
+  --line-2: #CFCDC2;
+  --ink: #1A1A1A;
+  --ink-2: #5F5E58;
+  --ink-3: #8D8C85;
+  --accent: #3D5BE0;
+  --accent-2: #2C4AC9;
+  --accent-deep: #2A43B8;
+  --accent-ink: #FFFFFF;
+  --accent-soft: rgba(61, 91, 224, 0.10);
+  --glow: rgba(61, 91, 224, 0.14);
+  --shadow: 0 20px 60px rgba(30, 40, 60, 0.14);
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  background-image: radial-gradient(1000px 500px at 85% -10%, var(--glow), transparent 60%);
+  background-repeat: no-repeat;
+  transition: background-color .2s, color .2s;
+}
+
+/* ── Tailwind theme: every utility colour resolves to a token above ─────── */
+@theme inline {
+  /* Only three fonts (brief rule 2). */
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Instrument Serif", serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-heading: "Inter", sans-serif;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+
+  /* shadcn/ui semantic names, aliased onto the same tokens. */
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-ink);
+  --color-secondary: var(--surface-2);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--surface-2);
+  --color-muted-foreground: var(--ink-2);
+  --color-accent-foreground: var(--accent-ink);
+  --color-destructive: var(--ink);
+  --color-border: var(--line);
+  --color-input: var(--line-2);
+  --color-ring: var(--accent);
+
+  /* Corners: 9–12px controls, 14–18px cards, 999px pills. */
+  --radius-sm: 9px;
+  --radius-md: 9px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
+  --radius-3xl: 18px;
+  --radius-4xl: 999px;
+
+  --shadow-rl: var(--shadow);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-family: var(--font-sans);
+  }
+  body {
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.55;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+/* ── Component recipes ──────────────────────────────────────────────────── */
+@layer components {
+  /* Mono tag: the only place uppercase is allowed. */
+  .rl-mono {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  /* Serif italic accent words — always in the accent colour. */
+  .rl-serif {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--accent);
+  }
+
+  .rl-greeting {
+    font-size: 52px;
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+    max-width: 16ch;
+    color: var(--ink);
+  }
+
+  .rl-h2 {
+    font-size: 18px;
+    line-height: 1.3;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .rl-card-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.22;
+    color: var(--accent);
+  }
+
+  .rl-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+
+  .rl-card-inset {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+
+  .rl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: 1px solid var(--line-2);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color .15s, border-color .15s, color .15s, opacity .15s;
+  }
+  .rl-btn:hover:not(:disabled) {
+    background: var(--surface-3);
+  }
+  .rl-btn:disabled {
+    opacity: 0.5;
+  }
+  .rl-btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .rl-btn-primary:hover:not(:disabled) {
+    background: var(--accent-2);
+    border-color: var(--accent-2);
+  }
+  .rl-btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--ink-2);
+  }
+  .rl-btn-ghost:hover:not(:disabled) {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .rl-btn-sm {
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 9px;
+    font-size: 13px;
+  }
+
+  .rl-input {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .rl-input::placeholder {
+    color: var(--ink-3);
+  }
+  .rl-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .rl-input:disabled {
+    opacity: 0.6;
+  }
+
+  .rl-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .rl-hint {
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  /* Toggle pill (context areas, role picker, filters). */
+  .rl-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    background: transparent;
+    color: var(--ink-2);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background-color .15s, border-color .15s, color .15s;
+  }
+  .rl-pill:hover:not(:disabled) {
+    color: var(--ink);
+    border-color: var(--ink-3);
+  }
+  .rl-pill[data-selected="true"] {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+
+  /* Small mono tag chip. */
+  .rl-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 20px;
+    padding: 0 7px;
+    border-radius: 999px;
+    border: 1px solid var(--line-2);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .rl-tag[data-tone="accent"] {
+    border-color: transparent;
+    background: var(--accent-soft);
+    color: var(--accent-2);
+  }
+  .rl-tag[data-tone="strong"] {
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+
+  .rl-live-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--accent);
+    animation: rl-pulse 1.6s ease-in-out infinite;
+  }
+
+  .rl-link {
+    color: var(--accent-2);
+    text-underline-offset: 3px;
+  }
+  .rl-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Rendered documents (Tiptap editor + doc previews). */
+  .rl-prose {
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .rl-prose:focus {
+    outline: none;
+  }
+  .rl-prose > * + * {
+    margin-top: 0.75em;
+  }
+  .rl-prose h1 {
+    font-size: 24px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .rl-prose h2 {
+    font-size: 18px;
+    line-height: 1.3;
+    font-weight: 600;
+    margin-top: 1.4em;
+  }
+  .rl-prose h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 1.2em;
+  }
+  .rl-prose ul {
+    list-style: disc;
+    padding-left: 1.25em;
+  }
+  .rl-prose ol {
+    list-style: decimal;
+    padding-left: 1.25em;
+  }
+  .rl-prose li + li {
+    margin-top: 0.3em;
+  }
+  .rl-prose blockquote {
+    border-left: 2px solid var(--accent);
+    padding-left: 12px;
+    color: var(--ink-2);
+  }
+  .rl-prose code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--surface-2);
+    border-radius: 5px;
+    padding: 1px 5px;
+  }
+  .rl-prose hr {
+    border-color: var(--line);
+  }
+  .rl-prose p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: var(--ink-3);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+}
+
+@keyframes rl-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@media (max-width: 720px) {
+  .rl-greeting {
+    font-size: 38px;
+  }
+}
+
+/* Shown on every page (landing and app): subtle blurred radial-gradient blobs fixed behind the content. */
+.ld-leaks {
+  position: fixed;
+  inset: 0;
+  z-index: -20;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ld-leak {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.14;
+  background: radial-gradient(circle, var(--accent-2), transparent 68%);
+  animation: ld-drift 22s ease-in-out infinite alternate;
+}
+[data-theme="light"] .ld-leak {
+  opacity: 0.2;
+}
+.ld-leak:nth-child(1) { width: 720px; height: 720px; top: -260px; right: -160px; }
+.ld-leak:nth-child(2) { width: 560px; height: 560px; top: 46%; left: -240px; animation-delay: -8s; }
+.ld-leak:nth-child(3) { width: 640px; height: 640px; bottom: -300px; right: 12%; animation-delay: -15s; }
+@keyframes ld-drift {
+  to { transform: translate3d(60px, 40px, 0) scale(1.12); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ld-leak { animation: none; }
 }

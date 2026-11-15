@@ -1,0 +1,7 @@
+customer_number,channel,segment,product,first_order_days_ago
+C-2001,Website,First-time,Shampoo 250ml,34
+C-2002,Marketplace,First-time,Shampoo 250ml,47
+C-2003,Website,Repeat,Shampoo 250ml,120
+C-2004,Website,First-time,Shampoo 250ml,61
+C-2005,Marketplace,First-time,Shampoo 250ml,55
+C-2006,Website,Gift,Shampoo 250ml,29
