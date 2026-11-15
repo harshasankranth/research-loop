@@ -33,20 +33,28 @@
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
 }
 
-/* Matte pill */
+/* Liquid-glass pill (matches the question window). */
 .ld-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 9px 18px;
   border-radius: 999px;
-  color: #fff;
+  color: var(--ink);
   font-size: 13px;
   font-weight: 700;
-  background: linear-gradient(180deg, var(--accent-2), var(--accent));
-  border: 1px solid var(--accent-deep);
-  box-shadow: 0 10px 24px rgba(61, 91, 224, 0.3);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  background: color-mix(in srgb, var(--surface) 48%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  backdrop-filter: blur(18px) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 45%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--ink) 6%, transparent),
+    0 0 26px rgba(61, 91, 224, 0.18),
+    0 10px 28px rgba(20, 30, 70, 0.12);
 }
+.ld-pill .ld-mic,
+.ld-pill .ld-wave { color: var(--accent); }
 
 /* Orbit rings */
 .ld-ring { animation: ld-rotate 26s linear infinite; transform-origin: center; }
@@ -193,7 +201,7 @@
 .ld-glow { filter: drop-shadow(0 0 14px rgba(61, 91, 224, 0.45)); }
 .ld-orb { box-shadow: 0 0 34px rgba(61, 91, 224, 0.45), 0 24px 60px rgba(61, 91, 224, 0.3); }
 .ld-chrome { box-shadow: 0 0 22px rgba(61, 91, 224, 0.3), 0 14px 30px rgba(0, 0, 0, 0.16); }
-.ld-pill { box-shadow: 0 0 20px rgba(61, 91, 224, 0.45); }
+/* .ld-pill glow is on the rule itself above. */
 .ld-window { box-shadow: 0 0 26px rgba(61, 91, 224, 0.22), var(--shadow); }
 .ld-node { box-shadow: 0 0 14px rgba(61, 91, 224, 0.16); }
 .ld-node[aria-pressed="true"] { box-shadow: 0 0 26px rgba(61, 91, 224, 0.55); }
