@@ -117,7 +117,16 @@ export function HeroScene() {
         <Sparkle size={30} className="ld-glow" style={{ animationDelay: "-1.4s" }} />
       </div>
       <div className="ld-float" style={{ right: "0%", top: "50%", ["--depth" as string]: 16 }}>
-        <span className="ld-pill ld-bob-slow">● Owned outcome</span>
+        <span className="ld-pill ld-bob-slow">
+          <span aria-hidden className="ld-mic">
+            <span className="ld-mic-body" />
+            <span className="ld-mic-stand" />
+          </span>
+          Available with Voice Chat AI
+          <span aria-hidden className="ld-wave">
+            <span /><span /><span /><span /><span />
+          </span>
+        </span>
       </div>
       <div className="ld-float" style={{ left: "0%", top: "30%", width: 260, ["--depth" as string]: 14 }}>
         <XpWindow title="question.txt">
